@@ -1,0 +1,119 @@
+
+
+.roomId {
+  position: absolute;
+  font-size: 3vw;
+  top:0;
+  margin-top: 1vh;
+}
+
+.qNum {
+  position: absolute;
+  font-size: 2vh;
+  top:0;
+  right:1vw;
+}
+
+.qImg {
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 35vh; /* just to make sure it's not too big */
+}
+
+.qDesc {
+  text-align: center;
+  font-size: 4vh;
+  font-weight: bold;
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-bottom: 1vh;
+}
+
+
+
+.rButton {
+  display:inline-block;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 25px;
+  padding: 15px;
+  border-radius: 1vw;
+}
+
+.ctrlButtons{
+  position: absolute;
+  bottom: 2vh;
+  width:80%;
+  left:10%;
+  display: flex;
+  background-color: lightblue;
+  border-radius: 10px;
+  padding: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: solid;
+  border-width: 1px;
+}
+
+
+
+.gridview {
+  display: grid;
+  grid-gap: 5px;
+  grid-template-columns: repeat(auto-fit, 45vw);
+  justify-content: center;
+}
+
+.qbox{
+  margin-bottom: 0;
+  margin-top: 0;
+  height: 14vh;
+  background-color: lightblue;
+  padding:30px;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
+  font-size: 2vw;
+}
+
+.graphs{
+  width: 25vw;
+  position: absolute;
+  top: 8%;
+  left: 0;
+  font-size: 5vh;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.graphA{
+  margin:1px;
+  width:10%;
+  border-style: solid;
+  border-color: black;
+  background-color: yellow;
+}
+.graphB{
+
+  height: 6vh;
+  margin:1px;
+  width:10%;
+  border-style: solid;
+  border-color: black;
+  background-color: green;
+}
+.graphC{
+  margin:1px;
+  width:10%;
+  border-style: solid;
+  border-color: black;
+  background-color: red;
+}
+.graphD{
+  margin:1px;
+  width:10%;
+  border-style: solid;
+  border-color: black;
+  background-color: purple;
+}

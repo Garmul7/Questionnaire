@@ -1,0 +1,70 @@
+.column {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+.qAns {
+  margin-top: 5vh;
+  display: flex;
+  flex-wrap: wrap;
+  height: 75vh;
+
+}
+
+.qTopic {
+  text-align: center;
+  font-size: 30px;
+}
+
+.qNum {
+  text-align: center;
+  font-size: 20px;
+}
+.sendButton{
+  position: absolute;
+  bottom: 1vh;
+  height: 8vh;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  background-color: #d94f4b;
+  border-radius: 10vw;
+  font-size: 3vh;
+  font-weight: bold;
+}
+.labl {
+  flex: 40%;
+  margin: 15px;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: lightblue;
+  font-size: 10vw;
+  text-align: center;
+
+  position: relative;
+
+}
+
+
+
+.labl > input{ /* HIDE RADIO */
+  position: absolute;
+  top: -3px;
+  height: 0;
+  display:flex;
+  visibility: hidden; /* Makes input not-clickable */
+  /*position: absolute; /* Remove input from document flow */
+}
+.labl > input + div{ /* DIV STYLES */
+  cursor:pointer;
+}
+.labl > input:checked + div{ /* (RADIO CHECKED) DIV STYLES */
+  background-color: #ffd6bb;
+  border-radius: 5px;
+}

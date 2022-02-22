@@ -1,0 +1,47 @@
+<div class="container">
+
+<div class="introDiv">
+    <img class="mainTitle" src="../../assets/images/titleImg.png" height="514" width="2137"/>
+</div>
+
+
+<div class="linkDiv">
+  <input OnlyNumber="true" placeholder="Room ID..." #inputroomid  (keyup)="readRoomId(inputroomid)"  maxlength="6">
+
+  <h2 class="links" [routerLink]="['/qclient', {roomid: this.id}]" >
+    Join with code
+  </h2>
+
+  <br>
+
+  <h2 class="links" [routerLink]="['/list', {operation: 'host'}]">
+    Host questionnaire
+  </h2>
+
+  <br>
+
+  <!--
+  <h2 class="links">
+    Login
+  </h2>
+  !-->
+
+  <h2 class = "links" [routerLink]="['/create']">
+    Create Questionnaire
+  </h2>
+
+  <h2 class = "links" [routerLink]="['/list', {operation: 'edit'}]">
+    Edit Questionnaire
+  </h2>
+</div>
+
+
+  <p class="about">
+    Create and host questionnaires for your live or distance classes!
+    <br>
+    Log-In to create, edit, save and host your questionnaires.
+    <br>
+    This app has been created for the Engineering Thesis Project by Tomasz Garmulewicz at Lodz University of Technology
+  </p>
+
+</div>

@@ -1,0 +1,45 @@
+
+
+
+.introDiv {
+  display: block;
+  margin:auto;
+  text-align: center;
+}
+
+.mainTitle{
+  height: 12vh;
+  width: auto;
+}
+
+.linkDiv{
+  display: block;
+  margin:auto;
+  width:30%;
+  min-width: 340px;
+}
+
+.links {
+  text-align: center;
+  font-size: 4vh;
+  border-radius: 20px;
+  border-style: solid;
+  background-color: white;
+  cursor: pointer;
+}
+
+.about{
+  position:absolute;
+  bottom: 0;
+  font-size: 12px;
+}
+
+input {
+  text-align: center;
+  font-size: 4vh;
+  border-radius: 20px;
+  border-style: solid;
+  background-color: white;
+  margin-top: 100px;
+  width: 98%;
+}

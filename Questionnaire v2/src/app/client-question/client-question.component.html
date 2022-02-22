@@ -1,0 +1,35 @@
+
+<h1 class="qTopic">Room ID: {{roomid}}</h1>
+<h2 class="qNum">Question {{questionNum + 1}}</h2>
+
+<div class="qAns">
+
+
+    <label *ngIf="possibleAns>=2" class="labl">
+
+      <input type="radio" name="radioname" value="0" (change)="select($event)" />
+      <div class="column">A</div>
+    </label>
+
+    <label *ngIf="possibleAns>=2" class="labl">
+      <input type="radio" name="radioname" value="1" (change)="select($event)" />
+      <div class="column">B</div>
+    </label>
+
+
+
+    <label *ngIf="possibleAns>=3" class="labl">
+      <input type="radio" name="radioname" value="2"  (change)="select($event)" />
+      <div class="column">C</div>
+    </label>
+
+    <label *ngIf="possibleAns>=4" class="labl">
+      <input type="radio" name="radioname" value="3"  (change)="select($event)" />
+      <div class="column">D</div>
+    </label>
+
+
+</div>
+<button class="sendButton" (click)="sendVote()">SEND</button>
+
+

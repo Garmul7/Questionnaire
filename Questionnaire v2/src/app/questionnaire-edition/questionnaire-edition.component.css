@@ -1,0 +1,167 @@
+button{
+  background-color: lightblue;
+  border-radius: 10vw;
+}
+
+
+.creatorContainer{
+  overflow-y: scroll;
+  height: 80vh;
+  margin:0;
+}
+
+.questionDisplay{
+  position: relative;
+  border-style: solid;
+  border-color: lightblue;
+  border-radius: 7vw;
+  margin:5vw;
+}
+
+.qTopic { /* topic of questionnaire*/
+
+  text-align: center;
+  font-size: 6vh;
+  margin-bottom:2vh;
+}
+
+.qNum { /* number of question*/
+  text-align: center;
+  font-size: 2vh;
+}
+
+.qImg { /* image attached to question*/
+  display:block;
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 35vh; /* just to make sure it's not too big */
+}
+
+.qDesc { /* the question itself (description)*/
+  text-align: center;
+  font-size: 4vh;
+  margin-left: 2vh;
+  margin-right: 2vh;
+}
+
+.qAns { /* answers to the question*/
+  margin: 2vh auto;
+  width:60vw;
+  border: 1px solid lightblue;
+  border-radius: 1vw;
+  font-size: 2vh;
+}
+
+.rButton { /* buttons for adding questions*/
+  font-size: 2vh;
+  padding: 1vh;
+  margin-left: 1vw;
+}
+
+.bigLabel { /*the big topic label at the beggining*/
+  text-align: center;
+  font-size: 10vh;
+}
+
+.bigInputBox { /* big input box for topic*/
+  display: block;
+  width:100%;
+  height:10vh;
+  font-size: 5vh;
+  margin:auto;
+  border-radius: 10vw;
+}
+
+.bigButton { /* Create questionnaire with given topic*/
+  height: 10vh;
+  width: 15vw;
+  font-size: 5vh;
+  display:block;
+  margin: auto;
+}
+
+.qLabel { /* labels for the inputs of question and answers*/
+  font-size: 2vh;
+}
+
+.qInput{ /* the input box of question*/
+  display: block;
+  margin: auto;
+  width:90vw;
+  height:auto;
+  font-size: 2vh;
+}
+
+.ansInputs { /* the input box of answer */
+  display: block;
+  margin: auto;
+  width:90vw;
+  height: 5vh;
+}
+
+.topicCreationDiv {
+  display: block;
+  margin:auto;
+  width:75vw;
+  height: 15vh;
+  text-align: center;
+  background-image: linear-gradient(to bottom, lightblue, lightblue 40%, lightcyan);
+  border-bottom-left-radius: 20vw;
+  border-bottom-right-radius: 20vw;
+}
+
+
+.delete{
+  font-size: 2vh;
+  position: absolute;
+  top:2vh;
+  right:5vw;
+}
+
+.move{
+  margin-left: 8px;
+  margin-right: 8px;
+  font-size: 2vh;
+}
+@media(max-width: 600px){ /* for screens below 600 px width */
+  .qTopic {
+    font-size: 3vh;
+  }
+
+  .qDesc {
+    font-size: 2.5vh;
+    margin-left: 5vw;
+    margin-right: 5vw;
+
+  }
+
+  .bigLabel {
+    font-size: 5vh;
+  }
+
+  .bigInputBox{
+    font-size: 2vh;
+
+  }
+
+  .bigButton{
+    padding: 5vh;
+    text-align: center;
+    width:70%;
+    height:70%;
+    text-align: center;
+
+  }
+  .qAns { /* answers to the question*/
+
+    margin-top: 0.5vh;
+    margin-bottom: 0.5vh;
+    width:80vw;
+    border: 1px solid green;
+    font-size: 1.5vh;
+  }
+
+
+
+}
+

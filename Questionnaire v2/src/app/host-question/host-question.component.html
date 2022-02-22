@@ -1,0 +1,31 @@
+  <h2 class="qNum">Question {{currentQuestion+1}}/{{questionnaire.qQuestions.length}}</h2>
+  <h2 class="roomId">ROOM ID: {{generatedRoomId}}</h2>
+  <img class="qImg" src="../../assets/images/placeholder.jpg" alt="no image at the moment">
+
+  <p  class="qDesc" *ngIf="questionnaire.qQuestions[currentQuestion] !== undefined && questionnaire.qQuestions[currentQuestion] !== null">{{questionnaire.qQuestions[currentQuestion].qDesc}} </p>
+
+
+
+  <div  class="gridview" *ngIf="questionnaire.qQuestions[currentQuestion] !== undefined && questionnaire.qQuestions[currentQuestion] !== null">
+    <div *ngFor="let answer of questionnaire.qQuestions[currentQuestion].qAns; let i = index" >
+      <p class="qbox">{{ansLetter[i]}}:  {{answer}}</p>
+    </div>
+  </div>
+
+
+
+  <div class="ctrlButtons">
+    <button class="rButton" (click)="showVotes()" >Show Results</button>
+    <button class="rButton" (click)="prevQ()">Prev Question</button>
+    <button class="rButton" (click)="nextQ()">Next Question</button>
+    <button class="rButton" [routerLink]="['/home']">Exit</button>
+  </div>
+
+
+  <div class="graphs" *ngIf="showvotes">
+    <div>Votes:</div>
+    <div *ngIf="questionnaire.votes[currentQuestion].length >= 2"  class="graphA" id="choiceA">A: {{questionnaire.votes[currentQuestion][0]}}</div>
+    <div *ngIf="questionnaire.votes[currentQuestion].length >= 2"  class="graphB" id="choiceB">B: {{questionnaire.votes[currentQuestion][1]}}</div>
+    <div *ngIf="questionnaire.votes[currentQuestion].length >= 3"  class="graphC" id="choiceC">C: {{questionnaire.votes[currentQuestion][2]}}</div>
+    <div *ngIf="questionnaire.votes[currentQuestion].length >= 4"  class="graphD" id="choiceD">D: {{questionnaire.votes[currentQuestion][3]}}</div>
+  </div>

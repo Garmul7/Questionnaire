@@ -1,0 +1,8 @@
+/* You can add global styles to this file, and also import other style files */
+ html {
+  min-height: 100%;
+  background-image: linear-gradient(to bottom, lightblue, lightblue 13vh, white 13vh, white 90%, lightblue 100%);
+
+}
+
+
