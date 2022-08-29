@@ -9,16 +9,34 @@
 
 .qNum {
   position: absolute;
-  font-size: 2vh;
+  font-size: 2vw;
   top:0;
-  right:1vw;
+  right:10px;
+
 }
 
 .qImg {
-  display:block;
+  background-color: white;
+  max-height: 40vh; /* just to make sure it's not too big */
+  max-width: 45vw;
+}
+
+.qImgPlaceholder {
+
+  max-height: 40vh; /* just to make sure it's not too big */
+  max-width: 45vw;
+}
+
+.imageBackground{
   margin-left: auto;
   margin-right: auto;
-  height: 35vh; /* just to make sure it's not too big */
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+
+  height: 40vh;
+  width: 45vw;
 }
 
 .qDesc {
@@ -28,6 +46,7 @@
   margin-left: 30px;
   margin-right: 30px;
   margin-bottom: 1vh;
+  word-break: break-all;
 }
 
 
@@ -36,14 +55,14 @@
   display:inline-block;
   margin-left: auto;
   margin-right: auto;
-  font-size: 25px;
+  font-size: 1.5vh;
   padding: 15px;
   border-radius: 1vw;
 }
 
 .ctrlButtons{
-  position: absolute;
-  bottom: 2vh;
+
+  bottom: 0;
   width:80%;
   left:10%;
   display: flex;
@@ -52,8 +71,11 @@
   padding: 5px;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 3vh;
+  margin-bottom: 2vh;
   border-style: solid;
   border-width: 1px;
+  position: absolute;
 }
 
 
@@ -68,22 +90,23 @@
 .qbox{
   margin-bottom: 0;
   margin-top: 0;
-  height: 14vh;
+  height: 11vh;
   background-color: lightblue;
-  padding:30px;
+  padding:2vh;
   border-radius: 5px;
   border-style: solid;
   border-width: 1px;
   font-size: 2vw;
+  word-break: break-all;
 }
 
 .graphs{
   width: 25vw;
   position: absolute;
-  top: 8%;
+  top: 15%;
   left: 0;
   font-size: 5vh;
-  overflow: hidden;
+
   white-space: nowrap;
 }
 
@@ -91,15 +114,15 @@
   margin:1px;
   width:10%;
   border-style: solid;
+  border-width: 1px;
   border-color: black;
   background-color: yellow;
 }
 .graphB{
-
-  height: 6vh;
   margin:1px;
   width:10%;
   border-style: solid;
+  border-width: 1px;
   border-color: black;
   background-color: green;
 }
@@ -107,6 +130,7 @@
   margin:1px;
   width:10%;
   border-style: solid;
+  border-width: 1px;
   border-color: black;
   background-color: red;
 }
@@ -114,6 +138,7 @@
   margin:1px;
   width:10%;
   border-style: solid;
+  border-width: 1px;
   border-color: black;
   background-color: purple;
 }

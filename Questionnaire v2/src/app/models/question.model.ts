@@ -6,10 +6,9 @@ export class QuestionModel{
 
   qDesc: string;
   qAns: string[];
-  nrOfAns: number;
   constructor(qDesc: string, qAns: string[] ) {
+    this.imagePath='';
     this.qDesc = qDesc;
     this.qAns = qAns;
-    this.nrOfAns = qAns.length;
   }
 }

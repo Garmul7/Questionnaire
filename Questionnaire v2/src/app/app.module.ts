@@ -1,7 +1,6 @@
 //EE
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule, Routes } from '@angular/router';
 
 import {ReactiveFormsModule} from "@angular/forms";
 
@@ -13,22 +12,18 @@ import { HostQuestionComponent } from './host-question/host-question.component';
 import { HomeComponent } from './home/home.component';
 import { QuestionnaireCreationComponent } from './questionnaire-creation/questionnaire-creation.component';
 import { ClientQuestionComponent } from './client-question/client-question.component';
-import {HttpClientModule} from "@angular/common/http";
+import {HttpClientModule, HTTP_INTERCEPTORS} from "@angular/common/http";
 import {FormsModule} from "@angular/forms";
 import { QuestionnaireListComponent } from './questionnaire-list/questionnaire-list.component';
 import { QuestionnaireEditionComponent } from './questionnaire-edition/questionnaire-edition.component';
+import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
+import {AuthGuard} from "./Services/auth.guard";
 
+import { AppRoutingModule } from './app-routing.module';
+import {TokenInterceptorService} from "./Services/token-interceptor.service";
 
-
-const routes: Routes = [
-  {path: 'qhost', component: HostQuestionComponent},
-  {path: 'qclient', component: ClientQuestionComponent},
-  {path: 'home', component: HomeComponent},
-  {path: 'create', component: QuestionnaireCreationComponent},
-  {path: 'edit', component: QuestionnaireEditionComponent},
-  {path: 'list', component: QuestionnaireListComponent},
-  {path: '', redirectTo: 'home', pathMatch: 'full'}
-];
+import {QRCodeModule} from "angularx-qrcode";
 
 const config: SocketIoConfig = {
   url: environment.socketUrl, // socket server url;
@@ -46,17 +41,24 @@ const config: SocketIoConfig = {
     QuestionnaireCreationComponent,
     ClientQuestionComponent,
     QuestionnaireListComponent,
-    QuestionnaireEditionComponent
+    QuestionnaireEditionComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     FormsModule,
-    RouterModule.forRoot(routes),
+    AppRoutingModule,
     SocketIoModule.forRoot(config),
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    QRCodeModule
   ],
-  providers: [],
+  providers: [AuthGuard,
+    {provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptorService,
+      multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

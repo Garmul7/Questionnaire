@@ -58,10 +58,11 @@ export class QuestionnaireCreationComponent implements OnInit {
     }
   }
 
+  /*
   onSubmit() {
     this.imageData = "";
   }
-
+*/
 
   scrollToElement(el: HTMLElement): void {
     this.myScrollContainer.nativeElement.scroll({
@@ -75,8 +76,10 @@ export class QuestionnaireCreationComponent implements OnInit {
   addTopic(topicInput: string): void {
     if(topicInput!=""){
       this.qtopic = topicInput.charAt(0).toUpperCase() + topicInput.slice(1);
-      this.topicCreated=true;
-      this.router.navigate(['/create', { topic: topicInput}])
+
+      this.questionnaire = new Questionnaire(localStorage.getItem('userid'), this.qtopic, this.questionList);
+      this.databaseService.AddQuestionnaire(this.questionnaire).subscribe({next: questionnaire =>  this.router.navigate(['/edit', { questionnaireid: questionnaire._id}])  });
+
     }
     else{
       window.alert("Topic must not be empty!")
@@ -123,7 +126,7 @@ export class QuestionnaireCreationComponent implements OnInit {
     },0)
 
 
-    this.imageData = "";
+    this.imageData = null;
   }
 
   deleteQuestion(index: number){
@@ -144,11 +147,8 @@ export class QuestionnaireCreationComponent implements OnInit {
 
   // create the questionnaire from questionList and save it in database
   saveQuestionnaire(): void {
-    for(let i=0; i<this.questionList.length; i++){
-      for(let j=0; j<this.questionList[i].qAns.length; j++){
-      }
-    }
-    this.questionnaire= new Questionnaire(this.qtopic, this.questionList)
+
+    this.questionnaire= new Questionnaire( localStorage.getItem('userid'), this.qtopic, this.questionList)
 
     this.databaseService.AddQuestionnaire(this.questionnaire).subscribe();
 

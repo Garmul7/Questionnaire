@@ -9,13 +9,17 @@ import {QuestionnaireCreationComponent} from "./questionnaire-creation/questionn
 import {ClientQuestionComponent} from "./client-question/client-question.component";
 import {QuestionnaireListComponent} from "./questionnaire-list/questionnaire-list.component";
 import {QuestionnaireEditionComponent} from "./questionnaire-edition/questionnaire-edition.component";
+import {LoginComponent} from "./login/login.component";
+import {RegisterComponent} from "./register/register.component";
+import {AuthGuard} from "./Services/auth.guard";
 
 
 
 const routes: Routes = [
   {
     path: 'qhost',
-    component: HostQuestionComponent
+    component: HostQuestionComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'qclient',
@@ -27,15 +31,25 @@ const routes: Routes = [
   },
   {
     path: 'create',
-    component: QuestionnaireCreationComponent
+    component: QuestionnaireCreationComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'edit',
-    component: QuestionnaireEditionComponent
+    component: QuestionnaireEditionComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'list',
     component: QuestionnaireListComponent
+  },
+  {
+    path: 'login',
+    component: LoginComponent
+  },
+  {
+    path: 'register',
+    component: RegisterComponent
   },
   {
     path: '',

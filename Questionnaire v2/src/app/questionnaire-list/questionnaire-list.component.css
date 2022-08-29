@@ -1,17 +1,18 @@
 .gridcontainer{
-  margin-top: 120px;
-  margin-bottom: 170px;
+  margin-top: 10vh;
+  margin-bottom: 5vh;
+  word-break: break-all;
 }
 
 .gridview{
   display: grid;
   grid-gap: 10px;
-  grid-template-columns: repeat(auto-fill, minmax(400px,1fr));
+  grid-template-columns: repeat(auto-fill, minmax(40vw,1fr));
 }
 
 .qbox{
   background-color: lightblue;
-  padding:50px;
+  padding:4vw;
   border-radius: 5px;
   height: 200px;
   border-style: solid;
@@ -20,12 +21,11 @@
 }
 
 .qtopic{
-  position: relative;
   top:-50px;
-  font-size: 40px;
+  font-size: 3vh;
   text-align: center;
 }
-
+/* this is not needed anymore*/
 .nrofq{
 
   position: inherit;
@@ -33,7 +33,15 @@
   text-align: center;
 }
 
+.delButton{
+  position: absolute;
+  padding: 2vw;
+  background-color: cadetblue;
+  border-radius: 5px;
+  border-width: 1px;
+}
+
 h1{
-  font-size: 60px;
+  font-size: 4vh;
   margin-left: 20px;
 }

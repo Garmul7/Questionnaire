@@ -1,8 +1,8 @@
-<div *ngIf="topicCreated!=true;" class="topicCreationDiv" xmlns:input="http://www.w3.org/1999/html">
-    <p class="bigLabel">Topic of Questionnaire:</p>
+<div *ngIf="topicCreated!=true;" class="topicCreationDiv">
+    <p class="bigLabel">Name or topic of your questionnaire:</p>
     <input #topicInput class="bigInputBox" ngModel maxlength="150">
     <br>
-    <button class="bigButton"(click)="addTopic(topicInput.value)">Next</button>
+    <button class="bigButton"(click)="addTopic(topicInput.value)">Save and edit</button>
   </div>
 
   <div *ngIf="topicCreated==true;">
@@ -40,7 +40,7 @@
 
     <div style="margin-bottom: 5vh">
       <p class="qLabel" style="margin-left: 2vw;">New question:  </p>
-      <input type="file" (change)="onFileSelect($event)">
+      <input type="file" (change)="onFileSelect($event)" style="color: transparent;">
 
       <div  *ngIf="imageData">
         <img class="questionImage" [src]="imageData"  />

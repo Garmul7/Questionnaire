@@ -6,7 +6,7 @@ button{
 
 .creatorContainer{
   overflow-y: scroll;
-  height: 80vh;
+  height: 79vh;
   margin:0;
 }
 
@@ -22,7 +22,14 @@ button{
 
   text-align: center;
   font-size: 6vh;
+  margin-bottom: 2vh;
+}
+
+.qTopicEdit{ /* edit topic button*/
+  text-align: center;
+  font-size: 6vh;
   margin-bottom:2vh;
+  margin-top: 1vh;
 }
 
 .qNum { /* number of question*/
@@ -123,45 +130,65 @@ button{
   margin-right: 8px;
   font-size: 2vh;
 }
-@media(max-width: 600px){ /* for screens below 600 px width */
-  .qTopic {
-    font-size: 3vh;
-  }
 
-  .qDesc {
-    font-size: 2.5vh;
-    margin-left: 5vw;
-    margin-right: 5vw;
-
-  }
-
-  .bigLabel {
-    font-size: 5vh;
-  }
-
-  .bigInputBox{
-    font-size: 2vh;
-
-  }
-
-  .bigButton{
-    padding: 5vh;
-    text-align: center;
-    width:70%;
-    height:70%;
-    text-align: center;
-
-  }
-  .qAns { /* answers to the question*/
-
-    margin-top: 0.5vh;
-    margin-bottom: 0.5vh;
-    width:80vw;
-    border: 1px solid green;
-    font-size: 1.5vh;
-  }
+.questionImage{
+  display:block;
+  margin: auto;
 
 
-
+  max-width: 90vw;
+  height: auto;
 }
+
+.bottomButtons{
+  padding:10px;
+  border-radius: 40px;
+
+  background-color: cadetblue;
+  position: absolute;
+  bottom: 2vh;
+}
+
+
+/*@media(max-width: 600px){ !* for screens below 600 px width *!*/
+/*  .qTopic {*/
+/*    font-size: 3vh;*/
+/*  }*/
+
+/*  .qDesc {*/
+/*    font-size: 2.5vh;*/
+/*    margin-left: 5vw;*/
+/*    margin-right: 5vw;*/
+
+/*  }*/
+
+/*  .bigLabel {*/
+/*    font-size: 5vh;*/
+/*  }*/
+
+/*  .bigInputBox{*/
+/*    font-size: 2vh;*/
+
+/*  }*/
+
+/*  .bigButton{*/
+/*    padding: 5vh;*/
+/*    text-align: center;*/
+/*    width:70%;*/
+/*    height:70%;*/
+/*    text-align: center;*/
+
+/*  }*/
+/*  .qAns { !* answers to the question*!*/
+
+/*    margin-top: 0.5vh;*/
+/*    margin-bottom: 0.5vh;*/
+/*    width:80vw;*/
+/*    border: 1px solid green;*/
+/*    font-size: 1.5vh;*/
+/*  }*/
+
+
+
+/*}*/
 

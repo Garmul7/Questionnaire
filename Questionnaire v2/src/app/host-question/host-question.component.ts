@@ -6,6 +6,9 @@ import {SocketService} from "../Services/socket.service";
 import {ActivatedRoute} from "@angular/router";
 import {DatabaseService} from "../Services/database.service";
 
+import {HostListener} from "@angular/core";
+
+import {QRCodeModule} from "angularx-qrcode";
 
 @Component({
   selector: 'app-host-question',
@@ -13,6 +16,9 @@ import {DatabaseService} from "../Services/database.service";
   styleUrls: ['./host-question.component.css']
 })
 export class HostQuestionComponent implements OnInit {
+
+  screenWidth: number;
+  qrResize: number;
 
   questionnaire: Questionnaire;
   questionList: QuestionModel[];
@@ -25,24 +31,25 @@ export class HostQuestionComponent implements OnInit {
 
   ansLetter=["A", "B", "C", "D"];
 
+  qrLink='';
   constructor(private socketService: SocketService,  private route: ActivatedRoute, private databaseService: DatabaseService) {
-
-
     let q1 = new QuestionModel("404", ["404", "404", "404", "404"])
     this.questionList = [q1];
-    this.questionnaire= new Questionnaire( "404", this.questionList )
+    this.questionnaire= new Questionnaire("404", "404", this.questionList )
     this.generatedRoomId=0;
     this.currentQuestion=0;
   }
 
-
-
   ngOnInit(): void {
+    this.screenWidth=window.innerWidth;
+    this.qrResize=this.screenWidth/10;
     this.showvotes = false;
     //get the id read in params
     this.route.params.subscribe(params => {
       const qid = params['questionnaireid'];
+
       this.generatedRoomId = parseInt(params['roomid']);
+      this.qrLink='http://192.168.1.19/qclient;roomid='+this.generatedRoomId;
       //get the questionnaire from database
       console.log(this.generatedRoomId);
       this.socketService.getHostedRoom(this.generatedRoomId);
@@ -57,7 +64,7 @@ export class HostQuestionComponent implements OnInit {
     });
 
     this.socketService.roomidsub.subscribe( x => {
-      console.log(x)
+      //console.log(x)
       if(Array.isArray(x)){
         if(typeof x[0] == 'number' && typeof x[1] == 'number' && Array.isArray(x[2])){
           this.generatedRoomId=x[0];
@@ -82,11 +89,16 @@ export class HostQuestionComponent implements OnInit {
 
   }
 
+  onResize(){
+    this.screenWidth=window.innerWidth;
+    this.qrResize=this.screenWidth/8;
+  }
+
   prevQ(){
     if(this.currentQuestion>0){
       this.currentQuestion-=1;
       this.socketService.changeQuestion(this.currentQuestion, this.generatedRoomId);
-      this.showvotes= false
+      this.updateVotes()
     }
   }
 
@@ -94,22 +106,22 @@ export class HostQuestionComponent implements OnInit {
     if(this.currentQuestion<this.questionnaire.qQuestions.length-1){
       this.currentQuestion+=1;
       this.socketService.changeQuestion(this.currentQuestion, this.generatedRoomId);
-      this.showvotes= false
+      this.updateVotes()
     }
   }
 
   showVotes(){
     this.showvotes= !this.showvotes
-    console.log(this.showvotes)
+    //console.log(this.showvotes)
     this.updateVotes()
   }
 
   updateVotes(){
-    console.log('updating')
+    //console.log('updating')
 
     let sum = 0;
     this.questionnaire.votes[this.currentQuestion].forEach(ans => sum += ans);
-    console.log(sum)
+    //console.log(sum)
 
     let array = ["A", "B", "C", "D"];
     array.forEach( (letter, index) => {
@@ -117,16 +129,19 @@ export class HostQuestionComponent implements OnInit {
 
       let percentage = (votes / sum) *100;
 
-      console.log(percentage)
+      //console.log(percentage)
       setTimeout(function() {let element = document.getElementById("choice"+letter);
-      console.log(element);
-      console.log(index);
+      //console.log(element);
+      //console.log(index);
+
 
       if(element) {
 
         let stringWidth= percentage.toString() + "%"
-        console.log(stringWidth);
-        element.style.width=stringWidth;
+        // console.log(stringWidth);
+        if(stringWidth!='NaN%') {
+          element.style.width = stringWidth;
+        }else{element.style.width = '0';}
       }
       }, 10);
 
@@ -137,5 +152,7 @@ export class HostQuestionComponent implements OnInit {
 
 
   }
+
+
 
 }

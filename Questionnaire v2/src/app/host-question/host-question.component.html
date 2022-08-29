@@ -1,6 +1,15 @@
-  <h2 class="qNum">Question {{currentQuestion+1}}/{{questionnaire.qQuestions.length}}</h2>
+<div (window:resize)="onResize()" style="height: 98vh;">
+  <h2
+    class="qNum">Question {{currentQuestion+1}}/{{questionnaire.qQuestions.length}}
+    <div  style="border: 4px solid black"><qrcode  [qrdata]="qrLink" [width]=qrResize ></qrcode></div>
+  </h2>
   <h2 class="roomId">ROOM ID: {{generatedRoomId}}</h2>
-  <img class="qImg" src="../../assets/images/placeholder.jpg" alt="no image at the moment">
+
+
+  <div class="imageBackground">
+    <img *ngIf="!questionnaire.qQuestions[currentQuestion].imagePath" class="qImgPlaceholder"  src="assets/images/Questionmark.png"  />
+    <img *ngIf="questionnaire.qQuestions[currentQuestion].imagePath" class="qImg"  [src]="questionnaire.qQuestions[currentQuestion].imagePath"  />
+  </div>
 
   <p  class="qDesc" *ngIf="questionnaire.qQuestions[currentQuestion] !== undefined && questionnaire.qQuestions[currentQuestion] !== null">{{questionnaire.qQuestions[currentQuestion].qDesc}} </p>
 
@@ -29,3 +38,4 @@
     <div *ngIf="questionnaire.votes[currentQuestion].length >= 3"  class="graphC" id="choiceC">C: {{questionnaire.votes[currentQuestion][2]}}</div>
     <div *ngIf="questionnaire.votes[currentQuestion].length >= 4"  class="graphD" id="choiceD">D: {{questionnaire.votes[currentQuestion][3]}}</div>
   </div>
+</div>

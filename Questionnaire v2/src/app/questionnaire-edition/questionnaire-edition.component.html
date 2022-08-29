@@ -1,14 +1,26 @@
 
-<div>
-  <h1 class="qTopic">{{qtopic}}</h1>
+
+  <h1 class="qTopic">
+    {{qtopic}}
+  </h1>
+
   <div class="creatorContainer" id="creatorContainer" #target>
 
+    <h1 class="qTopicEdit">
+      <button (click)="editTopic()" style="background-color: cadetblue">Edit topic</button>
+    </h1>
     <!-- view the questionnaire -->
     <div *ngFor="let question of questionList; let i = index" class="questionDisplay">
+
+
       <p class="qNum">
         <button class="move" (click)="moveUp(i)">Move up</button>
         Question {{i+1}}/{{questionList.length}}
-        <button class="move" (click)="moveDown(i)">Move down</button></p>
+        <button class="move" (click)="moveDown(i)">Move down</button>
+      </p>
+      <div  *ngIf="question.imagePath">
+        <img class="questionImage" [src]="question.imagePath"  />
+      </div>
       <p class="qDesc">{{question.qDesc}} </p>
       <button class="delete" (click)="deleteQuestion(i)">Delete question</button>
 
@@ -22,14 +34,25 @@
     </div>
 
 
+
+
+
     <div style="margin-bottom: 5vh">
-      <p class="qLabel" style="margin-left: 2vw;">New question:  </p>
+
+      <p class="qLabel">Image:</p>
+
+      <div style="display: flex; flex-direction: column; margin: auto; align-items: center;">
+        <input type="file" (change)="onFileSelect($event)" >
+        <div  *ngIf="imageData">
+          <img class="questionImage" [src]="imageData"  />
+        </div>
+
+      </div>
+
+        <p class="qLabel">Question:</p>
       <textarea ngModel maxlength="150" class ="qInput" id="questionI" #questionInput placeholder="Input your question here..."> </textarea>
       <div id="answersAddingDiv">
-        <p class="qLabel" style="margin-left: 2vw;">
-          Answers:
-        </p>
-        <p style="margin-left: 2vw;">(Min 2, max 4)</p>
+        <p class="qLabel">Answers:</p>
         <div><textarea placeholder="Answer A..." ngModel maxlength="190" class="ansInputs" style="width: 70vw; height: 4vh; font-size:1.5vh;"></textarea></div>
         <div><textarea placeholder="Answer B..." ngModel maxlength="190" class="ansInputs" style="width: 70vw; height: 4vh; font-size:1.5vh;"></textarea></div>
         <div><textarea placeholder="Answer C..." ngModel maxlength="190" class="ansInputs" style="width: 70vw; height: 4vh; font-size:1.5vh;"></textarea></div>
@@ -37,11 +60,22 @@
       </div>
     </div>
 
-    <button (click)="addQuestion(questionInput.value); scrollToElement(target)" class="rButton" style="display: block; margin: auto; margin-top: 0;">Add Question</button>
-    <button (click)="saveQuestionnaire()" class="rButton" style=" position: absolute; bottom: 2vh; right: 2vw;" [routerLink]="['/home']">Save as new questionnaire</button>
-    <button (click)="editQuestionnaire()" class="rButton" style=" position: absolute; bottom: 2vh; right: 20vw;" [routerLink]="['/home']">Save changes</button>
+
+
+
+    <button (click)="addQuestion(questionInput.value); scrollToElement(target)" class="rButton" style="display: block; margin: auto; margin-top: 0; margin-bottom: 20vh;">Add Question</button>
+
 
   </div>
-  <button [routerLink]="['/home']" class="rButton" style=" position: absolute; bottom: 2vh; left: 2vw;">Discard and exit</button>
-</div>
 
+
+
+
+
+<div class="bottomButtons">
+
+    <button [routerLink]="['/home']" class="rButton" >Discard and exit</button>
+    <button (click)="editQuestionnaire()" class="rButton"  [routerLink]="['/home']">Save changes</button>
+    <button (click)="saveQuestionnaire()" class="rButton"  [routerLink]="['/home']">Save as new copy</button>
+
+</div>

@@ -1,12 +1,13 @@
-<h1>Choose a questionnaire: </h1>
+<h1>Choose a questionnaire to {{operation}}: </h1>
 
 <div class="gridcontainer">
   <div class="gridview">
     <div *ngFor="let questionnaire of questionnaireList" >
-      <div class="qbox" (click)="redirect(questionnaire)">
+      <button *ngIf="operation=='edit'" (click)="deleteQuestionnaire(questionnaire)"  class="delButton">Delete</button>
+      <div  class="qbox" (click)="redirect(questionnaire)">
         <!--<p> id: {{questionnaire._id}}</p> -->
         <p class="qtopic">{{questionnaire.qTopic}}</p>
-        <p class="nrofq">Nr of questions: {{questionnaire.qQuestions.length}}</p>
+        <p class="nrofq">Nr. of questions: {{questionnaire.votes.length}}</p>
       </div>
     </div>
   </div>

@@ -1,11 +1,14 @@
-<div class="container">
+
 
 <div class="introDiv">
-    <img class="mainTitle" src="../../assets/images/titleImg.png" height="514" width="2137"/>
+    <img class="mainTitle" onClick="window.location.reload();" src="../../assets/images/titleImg.png" height="514" width="2137" />
+
+
 </div>
 
 
 <div class="linkDiv">
+
   <input OnlyNumber="true" placeholder="Room ID..." #inputroomid  (keyup)="readRoomId(inputroomid)"  maxlength="6">
 
   <h2 class="links" [routerLink]="['/qclient', {roomid: this.id}]" >
@@ -14,25 +17,36 @@
 
   <br>
 
-  <h2 class="links" [routerLink]="['/list', {operation: 'host'}]">
-    Host questionnaire
+  <h2 class="links"  [routerLink]="['/login']" *ngIf="!loggedin">
+    Login / Register
   </h2>
 
-  <br>
+  <!-- Logged in users only -->
+  <div style="border: 2px solid black; padding: 10px; border-radius: 20px"  *ngIf="loggedin">
+    <h2>Logged in as {{this.username}}</h2>
 
-  <!--
-  <h2 class="links">
-    Login
-  </h2>
-  !-->
+    <h2 class="links"   (click)="logout()">
+      Log out
+    </h2>
 
-  <h2 class = "links" [routerLink]="['/create']">
-    Create Questionnaire
-  </h2>
+    <h2 class="links" [routerLink]="['/list', {operation: 'host'}]">
+      Host questionnaire
+    </h2>
 
-  <h2 class = "links" [routerLink]="['/list', {operation: 'edit'}]">
-    Edit Questionnaire
-  </h2>
+    <br>
+
+
+
+
+
+    <h2 class = "links" [routerLink]="['/create']">
+      Create Questionnaire
+    </h2>
+
+    <h2 class = "links" [routerLink]="['/list', {operation: 'edit'}]">
+      Edit Questionnaire
+    </h2>
+  </div>
 </div>
 
 
@@ -44,4 +58,4 @@
     This app has been created for the Engineering Thesis Project by Tomasz Garmulewicz at Lodz University of Technology
   </p>
 
-</div>
+

@@ -3,6 +3,7 @@ import {Questionnaire} from "../models/questionnaire.model";
 import {QuestionModel} from "../models/question.model";
 import {DatabaseService} from "../Services/database.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {createInput} from "@angular/compiler/src/core";
 
 @Component({
   selector: 'app-questionnaire-edition',
@@ -16,7 +17,7 @@ export class QuestionnaireEditionComponent implements OnInit {
   questionnaireid: string;
   questionnaire: Questionnaire;
 
-
+  imageData: string;
   ansInputNumber: number;
 
   qtopic: string;
@@ -49,6 +50,25 @@ export class QuestionnaireEditionComponent implements OnInit {
     })
   }
 
+  onFileSelect(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
+
+    const allowedMimeTypes = ["image/png", "image/jpeg", "image/jpg"];
+    if (file && allowedMimeTypes.includes(file.type)) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imageData = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  /*
+  onSubmit() {
+    this.imageData = "";
+  }
+*/
+
   scrollToElement(el: HTMLElement): void {
     this.myScrollContainer.nativeElement.scroll({
       top: this.myScrollContainer.nativeElement.scrollHeight,
@@ -74,8 +94,9 @@ export class QuestionnaireEditionComponent implements OnInit {
         alert("There must be at least 2 answers")
         return
       }
-
-      this.questionList.push(new QuestionModel(questionInput.charAt(0).toUpperCase() + questionInput.slice(1), qAns));
+      let question = new QuestionModel(questionInput.charAt(0).toUpperCase() + questionInput.slice(1), qAns)
+      question.imagePath=this.imageData;
+      this.questionList.push(question);
 
       this.votes[this.questionList.length]=[]
 
@@ -97,9 +118,9 @@ export class QuestionnaireEditionComponent implements OnInit {
       }
     },0)
 
+
+    this.imageData = null;
   }
-
-
 
   deleteQuestion(index: number){
     this.questionList.splice(index, 1)
@@ -119,19 +140,28 @@ export class QuestionnaireEditionComponent implements OnInit {
 
   // create the questionnaire from questionList and save it in database
   saveQuestionnaire(): void {
-
-    this.questionnaire= new Questionnaire(this.qtopic, this.questionList);
-
-    this.databaseService.AddQuestionnaire(this.questionnaire).subscribe();
-
+    let newTopic = prompt('Enter questionnaire topic for the copy');
+    if(newTopic != null && newTopic.length < 48) {
+      this.questionnaire = new Questionnaire(localStorage.getItem('userid'), newTopic, this.questionList)
+      this.databaseService.AddQuestionnaire(this.questionnaire).subscribe();
+    }else{window.alert('Topic cannot be empty or longer than 48 characters!')}
   }
 
   editQuestionnaire(): void{
-    this.questionnaire = new Questionnaire(this.qtopic, this.questionList);
-    console.log(this.questionnaire._id);
-    console.log(this.questionnaireid);
-    this.questionnaire._id=this.questionnaireid;
-    this.databaseService.EditQuestionnaire(this.questionnaire).subscribe();
+    if(localStorage.getItem('userid')!=null) {
+      this.questionnaire = new Questionnaire(localStorage.getItem('userid'), this.qtopic, this.questionList);
+      console.log(this.questionnaire._id);
+      console.log(this.questionnaireid);
+      this.questionnaire._id = this.questionnaireid;
+      this.databaseService.EditQuestionnaire(this.questionnaire).subscribe();
+    }
+
   }
 
+  editTopic(): void{
+    let newTopic = prompt('Enter new questionnaire topic');
+    if(newTopic != null && newTopic.length < 48){
+      this.qtopic=newTopic;
+    }else{window.alert('New topic cannot be empty or longer than 48 characters!')}
+  }
 }

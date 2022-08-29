@@ -1,106 +1,51 @@
+
+
 // sockets
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-
 const app = express();
 
+const jwt = require('jsonwebtoken');
 
+const questionnaireController=require('./routes/questionnaireController');
+const accountController=require('./routes/accountController');
+const e = require('express');
 
-// database
-const fetch = require("node-fetch")
-
-const cors = require('cors')
-
-const Express = require("express");
-const BodyParser = require("body-parser");
-const MongoClient = require("mongodb").MongoClient;
-const ObjectId = require("mongodb").ObjectID;
-const { get } = require("express/lib/response");
-const res = require("express/lib/response");
-
-const CONNECTION_URL = 'mongodb+srv://Garmul:stn369@myfirstdatabase.6s2c9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
-const DATABASE_NAME = "questionnaireStorage";
-
-
-app.use(BodyParser.json());
-app.use(BodyParser.urlencoded({ extended: true }));
-app.use(cors())
-// new
-
-
-// DATABASE / REQUESTS //////////////////////////////////////////////////////////////////
-var database, collection;
-
-    MongoClient.connect(CONNECTION_URL, { useNewUrlParser: true }, (error, client) => {
-        if(error) {
-            throw error;
-        }
-        database = client.db(DATABASE_NAME);
-        collection = database.collection("questionnaire");
-        console.log("Connected to `" + DATABASE_NAME + "`!");
-    });
+app.use('/questionnaire', questionnaireController);
+app.use('/account', accountController);
 
 
 
-app.post("/questionnaire", (request, response) => {
-
-    console.log(`request for ${request}`)
-    collection.insert(request.body, (error, result) => {
-        if(error) {
-            return response.status(500).send(error);
-        }
-        response.send(result.result);
-    });
-
-});
-
-app.get("/questionnaire", (request, response) => {
-    collection.find({}).toArray((error, result) => {
-        if(error) {
-            return response.status(500).send(error);
-        }
-        response.send(result);
-    });
-});
-
-
-app.get("/questionnaire/:id", (request, response) => {
-  collection.findOne({ "_id": new ObjectId(request.params.id) }, (error, result) => {
-      if(error) {
-          return response.status(500).send(error);
-      }
-      response.send(result);
-  });
-});
-
-app.put("/questionnaire", (request, response) => {
-  console.log(request.body._id)
-  collection.findOneAndUpdate(
-    {"_id" : new ObjectId(request.body._id)},
-    {$set: {qTopic: request.body.qTopic, qQuestions: request.body.qQuestions, votes: request.body.votes}}, (error, result) => {
-      if(error) {
-        console.log('error');
-        return response.status(500).send(error);
-      }
-      response.send(result);
-    });
-
-})
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-
-// SOCKETS ROOMS AND VORTING /////////////////////////////////////////////////////////////////
+// SOCKETS ROOMS AND VOTING /////////////////////////////////////////////////////////////////
 
 const ActiveRooms=[];
 const Voters=[];
+const VotesSent=[];
+
+function verifyToken(token){
+  if(!token){
+      return false;
+  }
+  
+ // let token=req.headers.authorization.split(' ')[1];
+  if(token==null){
+      return false;
+  }
+  try{
+    let payload = jwt.verify(token, 'secretKey');
+    if(!payload){
+        return false;
+    }
+    else return payload.subject;
+  }
+  catch{return false;}
+}
 
 
 // Assign the socket with roomid and remember them in active rooms
-function hostRoom(roomid, questionnaireID, currentQuestion, answers, users) {
-  const room = {roomid, questionnaireID, currentQuestion, answers, users};
+function hostRoom(roomid, currentQuestion, answers, users, host) {
+  const room = {roomid, currentQuestion, answers, users, host};
   ActiveRooms.push(room);
   return room;
 }
@@ -128,11 +73,16 @@ const io = socketio(server);
 
 // Run when client connects
 io.on('connection', socket => {
-
+  console.log('connection');
   // HOST PART //////////////////////////////////////////////////////////////////////////////////
 
     // When server recieves a hostRoom command, create a new room that will host a questionnaire
-  socket.on('hostRoom', (questionnaireID, votes) => {
+  socket.on('hostRoom', (votes, token) => {
+    let host = verifyToken(token);
+    if(!host){
+      console.log('unauthorized host room');
+      return;
+    }
     // if the host was already hosting without disconnecting but still decides to rehost, delete previous room
     if(Voters[socket.id]){
       const index = ActiveRooms.findIndex(room => room.roomid === Voters[socket.id]);
@@ -154,13 +104,13 @@ io.on('connection', socket => {
         }
     }
 
-    const room = hostRoom(newRoomid, questionnaireID, 0, votes, []);
+    const room = hostRoom(newRoomid,  0, votes, [], host);
     console.log(room)
     joinRoom(socket.id, newRoomid)
 
     socket.join(room.roomid);
 
-    console.log(`socket ${socket.id} hosted room ${room.roomid} with questionnaire ${room.questionnaireID}`);
+    console.log(`socket ${socket.id} hosted room ${room.roomid}`);
 
     socket.emit('generatedRoom', room.roomid, 0, (votes));
     console.log(`Rooms currently runnig: ${ActiveRooms.length}`);
@@ -171,29 +121,49 @@ io.on('connection', socket => {
 
 
   // When host refreshes room he gets all the information again from the server
-  socket.on('getHostedRoom', (roomid) => {
+  socket.on('getHostedRoom', (roomid, token) => {
     console.log('host reloaded')
+    let host = verifyToken(token);
+    if(!host){
+      console.log('unauthorized get host room');
+      return;
+    }
     const hostedRoom = ActiveRooms.find(room => room.roomid === roomid);
+    if(hostedRoom)
+    if(hostedRoom.host != host){
+      console.log(`user ${host} is not a host of ${hostedRoom}`);
+      return;
+    }
     if(hostedRoom){
       hostedRoom.users.push(socket.id)
       joinRoom(socket.id, roomid)
       console.log(hostedRoom)
       socket.join(roomid);
       socket.emit('generatedRoom', roomid, hostedRoom.currentQuestion, hostedRoom.answers);
-    } else{ socket.emit('error', 'Room not found')}
+    } else{ socket.emit('error', 'Room not found'); return;}
   });
 
   // Change question for room and give the current question to all voters
-  socket.on('changeQuestion', (currentQuestion, roomid) => {
+  socket.on('changeQuestion', (currentQuestion, roomid, token) => {
+    let host = verifyToken(token);
+    if(!host){
+      console.log('unauthorized change question');
+      return;
+    }
     console.log('recieved change question')
     const hostedRoom = ActiveRooms.find(room => room.roomid === roomid);
+    if(hostedRoom)
+    if(hostedRoom.host != host){
+      console.log(`user ${host} is not a host of ${hostedRoom}`);
+      return;
+    }
     if(hostedRoom) {
       hostedRoom.currentQuestion= currentQuestion;
       let possibleAns=hostedRoom.answers[currentQuestion].length;
       console.log('changed question, currentQ, possibleAns')
       console.log(currentQuestion, possibleAns)
       io.to(roomid).emit('currentQuestion', currentQuestion, possibleAns); // HERE IO EMIT RETARD
-    } else {socket.emit('error', 'Room not found')}
+    } else {socket.emit('error', 'Room not found'); return;}
   });
 
 
@@ -206,11 +176,18 @@ io.on('connection', socket => {
       socket.join(hostedRoom.roomid);
       hostedRoom.users.push(socket.id);
       joinRoom(socket.id, hostedRoom.roomid);
-      console.log(`user ${socket.id} connected to ${hostedRoom.roomid} that is hosting ${hostedRoom.questionnaireID} `);
+      console.log(`user ${socket.id} connected to ${hostedRoom.roomid}`);
       console.log(`curret users: ${Voters}`);
       console.log(Voters)
       
       cq = hostedRoom.currentQuestion
+
+      VotesSent[socket.id]=[];
+      for(let i = 0; i<hostedRoom.answers.length; i++){
+        VotesSent[socket.id][i]=0;
+      }
+      console.log(VotesSent[socket.id]);
+
 
       socket.emit('currentQuestion', cq , hostedRoom.answers[cq].length); 
     } else {socket.emit('error', 'Room not found')}
@@ -222,18 +199,26 @@ io.on('connection', socket => {
     index = ActiveRooms.findIndex(room => room.roomid === voterroom);
     if(vote != 5){
       if (index !== -1 ) {
+        
         currentQuestion=ActiveRooms[index].currentQuestion;
+        if(VotesSent[socket.id][currentQuestion] != 1){
         ActiveRooms[index].answers[currentQuestion][vote]+=1;
         console.log(`Recieved vote ${vote} for question ${currentQuestion}, roomid ${voterroom}`)
         console.log(`Answers: ${ActiveRooms[index].answers[currentQuestion]}`);
+        VotesSent[socket.id][currentQuestion]=1;
+        console.log(VotesSent[socket.id]);
         io.to(voterroom).emit('vote', (ActiveRooms[index].answers[currentQuestion]));
-      }else {socket.emit('error', 'Room not found')}
-    }else{socket.emit('error', 'Recieved wrong vote request')}
+        }else {socket.emit('error', 'Vote for this question already sent'); return;}
+      }else {socket.emit('error', 'Room not found'); return;}
+    }else{socket.emit('error', 'Recieved wrong vote request'); return;}
   });
 
   // On disconnect, delete users, check if room is empty, if it is, delete room
   socket.on('disconnect', () => {
     //delete the voter information
+    if(VotesSent[socket.id]){
+      delete VotesSent[socket.id];
+    }
     console.log('dissconnect')
     if(Voters[socket.id]){
       let voterroom=Voters[socket.id];
@@ -263,3 +248,4 @@ io.on('connection', socket => {
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

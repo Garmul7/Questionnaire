@@ -16,13 +16,14 @@ button{
   border-color: lightblue;
   border-radius: 7vw;
   margin:5vw;
+  word-break: break-all;
 }
 
 .qTopic { /* topic of questionnaire*/
 
   text-align: center;
-  font-size: 6vh;
-  margin-bottom:2vh;
+  font-size: 4vh;
+  margin-bottom:4vh;
 }
 
 .qNum { /* number of question*/
@@ -60,7 +61,8 @@ button{
 
 .bigLabel { /*the big topic label at the beggining*/
   text-align: center;
-  font-size: 10vh;
+  font-size: 5vw;
+  margin-top: 0;
 }
 
 .bigInputBox { /* big input box for topic*/
@@ -69,15 +71,17 @@ button{
   height:10vh;
   font-size: 5vh;
   margin:auto;
+  margin-top: 10vh;
   border-radius: 10vw;
 }
 
 .bigButton { /* Create questionnaire with given topic*/
   height: 10vh;
-  width: 15vw;
-  font-size: 5vh;
+  width: 15vh;
+  font-size: 3vh;
   display:block;
   margin: auto;
+  margin-top: 5vh;
 }
 
 .qLabel { /* labels for the inputs of question and answers*/
@@ -100,14 +104,16 @@ button{
 }
 
 .topicCreationDiv {
+  margin-top: 4vh;
   display: block;
-  margin:auto;
+  margin-left: auto;
+  margin-right: auto;
   width:75vw;
   height: 15vh;
   text-align: center;
-  background-image: linear-gradient(to bottom, lightblue, lightblue 40%, lightcyan);
-  border-bottom-left-radius: 20vw;
-  border-bottom-right-radius: 20vw;
+  /*background-image: linear-gradient(to bottom, lightblue, lightblue 40%, lightcyan);*/
+  /*border-bottom-left-radius: 20vw;*/
+  /*border-bottom-right-radius: 20vw;*/
 }
 
 
@@ -137,46 +143,46 @@ button{
 
 
 
-@media(max-width: 600px){ /* for screens below 600 px width */
-  .qTopic {
-    font-size: 3vh;
-  }
+/*@media(max-width: 600px){ !* for screens below 600 px width *!*/
+/*  .qTopic {*/
+/*    font-size: 3vh;*/
+/*  }*/
 
-  .qDesc {
-    font-size: 2.5vh;
-    margin-left: 5vw;
-    margin-right: 5vw;
+/*  .qDesc {*/
+/*    font-size: 2.5vh;*/
+/*    margin-left: 5vw;*/
+/*    margin-right: 5vw;*/
 
-  }
+/*  }*/
 
-  .bigLabel {
-    font-size: 5vh;
-  }
+/*  .bigLabel {*/
+/*    font-size: 3vh;*/
+/*  }*/
 
-  .bigInputBox{
-    font-size: 2vh;
+/*  .bigInputBox{*/
+/*    font-size: 2vh;*/
 
-  }
+/*  }*/
 
-  .bigButton{
-    padding: 5vh;
-    text-align: center;
-    width:70%;
-    height:70%;
-    text-align: center;
+/*  .bigButton{*/
+/*    padding: 5vh;*/
+/*    text-align: center;*/
+/*    width:70%;*/
+/*    height:70%;*/
+/*    text-align: center;*/
 
-  }
-  .qAns { /* answers to the question*/
+/*  }*/
+/*  .qAns { !* answers to the question*!*/
 
-    margin-top: 0.5vh;
-    margin-bottom: 0.5vh;
-    width:80vw;
-    border: 1px solid green;
-    font-size: 1.5vh;
-  }
-
-
+/*    margin-top: 0.5vh;*/
+/*    margin-bottom: 0.5vh;*/
+/*    width:80vw;*/
+/*    border: 1px solid green;*/
+/*    font-size: 1.5vh;*/
+/*  }*/
 
 
-}
+
+
+/*}*/
 

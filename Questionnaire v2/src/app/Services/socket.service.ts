@@ -18,16 +18,17 @@ export class SocketService {
   //host/////////////////////////////////////////////////////////////////////////////////
 
   //ask server to create room
-    createRoom(questionnaireID: string, votes: number[][]) {
-      console.log(`sending create room ${questionnaireID}`);
-      this.socket.emit('hostRoom', questionnaireID, votes);
+    createRoom(votes: number[][]) {
+      this.socket.emit('hostRoom',  votes, localStorage.getItem('token'));
     }
 
     //subscribe to recieve the roomid and other parameters of the room (just in case of refresh)
     roomidsub = new Observable(subscriber => {
       this.socket.on('generatedRoom', (roomid: number, currentQuestion: number, votes: number[][]) => {
         let returnvalue=[roomid, currentQuestion, votes];
-        console.log(`received roomid ${roomid}`)
+        // console.log(`received roomid ${roomid}`);
+        // console.log(`current question ${currentQuestion}`);
+        // console.log(`votes ${votes}`);
         subscriber.next(returnvalue);
       });
     });
@@ -43,13 +44,13 @@ export class SocketService {
 
 
   getHostedRoom(roomid: number){
-    this.socket.emit('getHostedRoom', roomid);
+    this.socket.emit('getHostedRoom', roomid, localStorage.getItem('token'));
   }
 
   //change question to the next / previous one so server can change the answers for voters
     changeQuestion(currentQuestion: number, roomid: number) {
       console.log(`Changing to question ${currentQuestion} room ${roomid}`);
-      this.socket.emit('changeQuestion', currentQuestion, roomid);
+      this.socket.emit('changeQuestion', currentQuestion, roomid, localStorage.getItem('token'));
     }
 
     //voter ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +62,10 @@ export class SocketService {
 
   sendVote(vote: number) {
       this.socket.emit('sendVote', vote);
+  }
+
+  dissconnect(){
+    this.socket.disconnect();
   }
 
   changeQuestionSub = new Observable(subscriber => {
@@ -76,4 +81,6 @@ export class SocketService {
       subscriber.next(msg);
     })
   })
+
+
 }

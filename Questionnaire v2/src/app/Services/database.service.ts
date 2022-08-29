@@ -13,7 +13,7 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class DatabaseService {
-  private questionnaireUrl = 'http://localhost:3000/questionnaire';
+  private questionnaireUrl = 'http://192.168.1.19:3000/questionnaire';
 
 
 
@@ -35,19 +35,27 @@ export class DatabaseService {
     );
   }
 
-  getQuestionnaires(): Observable<Questionnaire[]> {
-    return this.http.get<Questionnaire[]>(this.questionnaireUrl);
+  getQuestionnaireNames(): Observable<Questionnaire[]> {
+    return this.http.get<any>(this.questionnaireUrl);
   }
 
   getQuestionnaireById(id: string): Observable<Questionnaire> {
     const url = `${this.questionnaireUrl}/${id}`;
+    console.log("/////////////////////////////////");
+    console.log(url);
     return this.http.get<Questionnaire>(url, httpOptions).pipe(
       tap(_ => this.log(`fetched questionnaire =${id}`)),
       catchError(this.handleError<Questionnaire>(`getQuestionnaireById =${id}`))
     );
   }
 
-
+  deleteQuestionnaire(id: string): Observable<Questionnaire> {
+    const url = `${this.questionnaireUrl}/${id}`;
+    return this.http.delete<Questionnaire>(url, httpOptions).pipe(
+      tap(_ => this.log(`deleted questionnaire ${id}`)),
+      catchError(this.handleError<Questionnaire>(`deleteQuestionnaire ${id}`))
+    );
+  }
 
 
   private handleError<T>(operation = 'operation', result?: T) {
@@ -65,7 +73,7 @@ export class DatabaseService {
   }
 
   private log(message: string) {
-    console.log('MusicEventService: ' + message);
+    console.log('QuestionnaireService: ' + message);
   }
 
 }
