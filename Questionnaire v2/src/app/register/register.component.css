@@ -1,0 +1,45 @@
+.introDiv {
+  display: block;
+  margin:auto;
+  text-align: center;
+
+}
+
+.mainTitle{
+  height: 12vh;
+  width: auto;
+  cursor: pointer;
+}
+
+.container{
+  display: flex;
+  flex-direction: column;
+  font-size: 2.5vh;
+}
+
+.pageContainer{
+  margin-top:10px;
+  display: flex;
+  flex-direction: column;
+  font-size: 2.5vh;
+  align-items: center;
+}
+
+input {
+  text-align: center;
+  font-size: 2.5vh;
+  border-radius: 20px;
+  border-style: solid;
+  background-color: white;
+}
+
+button {
+  font-size: 1.5vh;
+  border-radius: 20px;
+  border-style: solid;
+  background-color: white;
+  cursor: pointer;
+  margin: 10px;
+  text-align: center;
+
+}

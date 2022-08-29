@@ -1,0 +1,22 @@
+<div class="introDiv" >
+  <img class="mainTitle" [routerLink]="['/home']" src="../../assets/images/titleImg.png" height="514" width="2137"  />
+
+</div>
+
+<div class="pageContainer">
+  <p>Login:</p>
+<div class="container" style="border: 1px solid black; padding:15px; border-radius: 20px; background-color: lightblue">
+  Login:
+  <input placeholder="" #login  >
+  Password:
+  <input placeholder="" #password  >
+
+  <button style="margin: 20px; background-color: cadetblue;" (click)="loginUser(login.value, password.value)">Login</button>
+</div>
+  <br>
+<div class="container" style="text-align: center">
+
+  Don't have an account?
+  <button [routerLink]="['/register']">Sign up</button>
+</div>
+</div>
