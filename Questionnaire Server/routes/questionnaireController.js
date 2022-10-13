@@ -42,9 +42,9 @@ function verifyToken(req, res, next){
 const questionSchema = {
     type: "object",
     properties: {
-        imagePath: {type: "string"},
+        imagePath: {type: ["string", "null"]},
         qDesc: {type: "string", maxLength: 48, minLength: 1},
-        qAns: {type: "array", maxItems: 4, minItems: 2}
+        qAns: {type: "array", minItems:2, maxItems: 4}
     },
     required: ["qDesc", "qAns"]
 };
@@ -63,21 +63,24 @@ const questionnaireSchema = {
 };
     
 // verify the request questionnaire for post / put
-function verifyQuestionnaire(body){
-    console.log(body);
+function verifyQuestionnaire(body){   
     const questionnaireValid = ajv.validate(questionnaireSchema, body);
     if(questionnaireValid){
         for(const q of body.qQuestions){
             let questionsValid = ajv.validate(questionSchema, q);
             if(questionsValid){
                 console.log('Questions Valid')
-            }else{console.log('Questions Invalid'); return false;}
+            }else{
+                console.log('Questions Invalid');
+                return false;
+            }
         }
         console.log('Questionnaire Valid')
         return true;
-    }else{console.log('Questionnaire Invalid'); return false;}
-
-
+    }else{
+        console.log('Questionnaire Invalid'); 
+        return false;
+    }
 }
 
 // DATABASE / REQUESTS //////////////////////////////////////////////////////////////////
@@ -94,98 +97,94 @@ var database, collection;
 
 
 
-router.post("/", verifyToken, (request, response) => {
-    console.log(`Post request for a new questionnaire ${request.body}`);
+        router.post("/", verifyToken, (request, response) => {
+            console.log(`Post request for a new questionnaire ${request.body}`);
 
-    if(verifyQuestionnaire(request.body)){
+            if(verifyQuestionnaire(request.body)){
 
-        if(request.userID!=request.body.userid){ //make sure that the request is from the same user that is logged in
-            console.log("UserIds don't match");
-            return response.status(401).send("UserIds don't match");
-        }
+                if(request.userID!=request.body.userid){ //make sure that the request is from the same user that is logged in
+                    console.log("UserIds don't match");
+                    return response.status(401).send("UserIds don't match");
+                }
 
-        request.body._id=null; //make sure the _id is empty so database creates it's own unique one
+                request.body._id=null; //set _id to null so database creates it's own unique one
 
-        collection.insert(request.body, (error, result) => {
-        console.log(request.body);
+                collection.insert(request.body, (error, result) => {
+                console.log(request.body);
+                    if(error) {
+                        console.log(error);
+                        return response.status(500).send(error);
+                    }
+                    return response.status(200).send(request.body);
+                });
+            }else{return response.status(400).send('Invalid request')}
+        });
+
+
+        router.get("/", verifyToken, (request, response) => {
+            console.log('get all request')
+            console.log(request.userID)
+
+            collection.find({userid: request.userID} , {projection:{qQuestions:0}}).toArray((error, result) => {
+                if(error) {
+                    console.log('error')
+                    return response.status(500).send(error);
+                }
+                response.send(result);
+
+            });
+
+        });
+
+
+        router.get("/:id", verifyToken, (request, response) => {
+
+        collection.findOne({ "_id": new ObjectId(request.params.id) }, (error, result) => {
             if(error) {
-                console.log(error);
+                console.log('error');
                 return response.status(500).send(error);
             }
-            return response.status(200).send(request.body);
+            if(request.userID!=result.userid){
+                return response.status(500).send('wrong user, cannot get');
+            }
+            console.log('get by id')
+
+            response.send(result);
         });
-    }else{return response.status(400).send('Invalid request')}
-});
 
+        });
 
-router.get("/", verifyToken, (request, response) => {
-
-    console.log('get request')
-    console.log(request.userID)
-
-    collection.find({userid: request.userID} , {projection:{qQuestions:0}}).toArray((error, result) => {
-        if(error) {
-            console.log('error')
-            return response.status(500).send(error);
-        }
-        console.log('get all')
-        console.log(result);
-        response.send(result);
-
-    });
-
-});
-
-
-router.get("/:id", verifyToken, (request, response) => {
-
-  collection.findOne({ "_id": new ObjectId(request.params.id) }, (error, result) => {
-      if(error) {
-        console.log('error');
-          return response.status(500).send(error);
-      }
-      if(request.userID!=result.userid){
-        return response.status(500).send('wrong user, cannot get');
-      }
-      console.log('get by id')
-      console.log(result);
-
-      response.send(result);
-  });
-
-});
-
-router.put("/",verifyToken, (request, response) => {
-  console.log(request.body);
-
-  if(verifyQuestionnaire(request.body)){
-    collection.findOneAndUpdate(
-        {"_id" : new ObjectId(request.body._id), "userid": request.userID},
-        {$set: {qTopic: request.body.qTopic, qQuestions: request.body.qQuestions, votes: request.body.votes}}, (error, result) => {
-        if(error) {
-            console.log('error');
-            return response.status(500).send(error);
-        }
-        console.log('put already existing');
+        router.put("/",verifyToken, (request, response) => {
         console.log(request.body);
-        response.send(result);
+
+        if(verifyQuestionnaire(request.body)){
+            collection.findOneAndUpdate(
+                {"_id" : new ObjectId(request.body._id), "userid": request.userID},
+                {$set: {qTopic: request.body.qTopic, qQuestions: request.body.qQuestions, votes: request.body.votes}}, (error, result) => {
+                if(error) {
+                    console.log('error');
+                    return response.status(500).send(error);
+                }
+                console.log('put already existing');
+                console.log(request.body);
+                response.send(result);
+                });
+            }else{response.status(400).send('Invalid request')}
+
         });
-    }else{response.status(400).send('Invalid request')}
 
-});
+        router.delete("/:id", verifyToken, (request, response) =>{
+            console.log(request.params.id);
 
-router.delete("/:id", verifyToken, (request, response) =>{
-    console.log(request.params.id);
+            collection.deleteOne({"_id": new ObjectId(request.params.id), "userid": request.userID }, (error, result) => {
+                if(error) {
+                    console.log('error');
+                    return response.status(500).send(error);
+                }
+                response.status(200).send(result);
+            });
 
-    collection.deleteOne({"_id": new ObjectId(request.params.id), "userid": request.userID }, (error, result) => {
-        if(error) {
-            console.log('error');
-            return response.status(500).send(error);
-        }
-        response.status(200).send(result);
-    });
-
-});
+        });
 
 
 module.exports=router;

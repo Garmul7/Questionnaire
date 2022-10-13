@@ -10,7 +10,6 @@ const jwt = require('jsonwebtoken');
 
 const questionnaireController=require('./routes/questionnaireController');
 const accountController=require('./routes/accountController');
-const e = require('express');
 
 app.use('/questionnaire', questionnaireController);
 app.use('/account', accountController);
@@ -44,8 +43,8 @@ function verifyToken(token){
 
 
 // Assign the socket with roomid and remember them in active rooms
-function hostRoom(roomid, currentQuestion, answers, users, host) {
-  const room = {roomid, currentQuestion, answers, users, host};
+function hostRoom(roomid, currentQuestion, answers, hostSocket, host_id) {
+  const room = {roomid, currentQuestion, answers, hostSocket, host_id};
   ActiveRooms.push(room);
   return room;
 }
@@ -58,11 +57,14 @@ function deleteIfEmpty(roomid){
   console.log('deleteifEmpty ///////////////////')
   //let room = ActiveRooms.find(room => room.roomid === roomid)
   const index = ActiveRooms.findIndex(room => room.roomid === roomid);
-
-  if(index!=-1)
-  if(ActiveRooms[index].users.length==0){
-    ActiveRooms.splice(index, 1);
-    console.log('room is empty, deleting')
+  if(index!=-1){
+    if(ActiveRooms[index]){
+      if(ActiveRooms[index].hostSocket == ''){
+        ActiveRooms.splice(index, 1);
+        console.log('ROOM DELETED')
+        io.to(roomid).emit('error', 'The room has been deleted'); 
+      }
+    }
   }
   console.log(ActiveRooms)
 }
@@ -76,9 +78,9 @@ io.on('connection', socket => {
   console.log('connection');
   // HOST PART //////////////////////////////////////////////////////////////////////////////////
 
-    // When server recieves a hostRoom command, create a new room that will host a questionnaire
   socket.on('hostRoom', (votes, token) => {
     let host = verifyToken(token);
+
     if(!host){
       console.log('unauthorized host room');
       return;
@@ -86,6 +88,7 @@ io.on('connection', socket => {
     // if the host was already hosting without disconnecting but still decides to rehost, delete previous room
     if(Voters[socket.id]){
       const index = ActiveRooms.findIndex(room => room.roomid === Voters[socket.id]);
+      if(index!=-1 && ActiveRooms[index])
       ActiveRooms.splice(index, 1);
     }
       
@@ -104,14 +107,14 @@ io.on('connection', socket => {
         }
     }
 
-    const room = hostRoom(newRoomid,  0, votes, [], host);
+    const room = hostRoom(newRoomid,  0, votes, socket.id, host);
+    console.log('HOSTING ROOM')
     console.log(room)
     joinRoom(socket.id, newRoomid)
 
     socket.join(room.roomid);
 
     console.log(`socket ${socket.id} hosted room ${room.roomid}`);
-
     socket.emit('generatedRoom', room.roomid, 0, (votes));
     console.log(`Rooms currently runnig: ${ActiveRooms.length}`);
     console.log(ActiveRooms)
@@ -123,6 +126,7 @@ io.on('connection', socket => {
   // When host refreshes room he gets all the information again from the server
   socket.on('getHostedRoom', (roomid, token) => {
     console.log('host reloaded')
+    // token verification //////////////////
     let host = verifyToken(token);
     if(!host){
       console.log('unauthorized get host room');
@@ -130,12 +134,17 @@ io.on('connection', socket => {
     }
     const hostedRoom = ActiveRooms.find(room => room.roomid === roomid);
     if(hostedRoom)
-    if(hostedRoom.host != host){
+    if(hostedRoom.host_id != host){
       console.log(`user ${host} is not a host of ${hostedRoom}`);
+      socket.emit('error', 'You are not the host')
       return;
     }
+
+    
+
     if(hostedRoom){
-      hostedRoom.users.push(socket.id)
+      //hostedRoom.users.push(socket.id)
+      hostedRoom.hostSocket = socket.id
       joinRoom(socket.id, roomid)
       console.log(hostedRoom)
       socket.join(roomid);
@@ -143,26 +152,31 @@ io.on('connection', socket => {
     } else{ socket.emit('error', 'Room not found'); return;}
   });
 
+
+
   // Change question for room and give the current question to all voters
   socket.on('changeQuestion', (currentQuestion, roomid, token) => {
+
     let host = verifyToken(token);
     if(!host){
       console.log('unauthorized change question');
       return;
     }
-    console.log('recieved change question')
     const hostedRoom = ActiveRooms.find(room => room.roomid === roomid);
     if(hostedRoom)
-    if(hostedRoom.host != host){
+    if(hostedRoom.host_id != host){
+      socket.emit('error', 'You are not the host')
       console.log(`user ${host} is not a host of ${hostedRoom}`);
       return;
     }
+
+
     if(hostedRoom) {
       hostedRoom.currentQuestion= currentQuestion;
       let possibleAns=hostedRoom.answers[currentQuestion].length;
       console.log('changed question, currentQ, possibleAns')
       console.log(currentQuestion, possibleAns)
-      io.to(roomid).emit('currentQuestion', currentQuestion, possibleAns); // HERE IO EMIT RETARD
+      io.to(roomid).emit('currentQuestion', currentQuestion, possibleAns); 
     } else {socket.emit('error', 'Room not found'); return;}
   });
 
@@ -174,10 +188,10 @@ io.on('connection', socket => {
     const hostedRoom = ActiveRooms.find(room => room.roomid === joinroomid);
     if(hostedRoom){
       socket.join(hostedRoom.roomid);
-      hostedRoom.users.push(socket.id);
+      //hostedRoom.users.push(socket.id);
       joinRoom(socket.id, hostedRoom.roomid);
       console.log(`user ${socket.id} connected to ${hostedRoom.roomid}`);
-      console.log(`curret users: ${Voters}`);
+      console.log(`curret users:`);
       console.log(Voters)
       
       cq = hostedRoom.currentQuestion
@@ -215,27 +229,32 @@ io.on('connection', socket => {
 
   // On disconnect, delete users, check if room is empty, if it is, delete room
   socket.on('disconnect', () => {
+    console.log('dissconnect')
     //delete the voter information
     if(VotesSent[socket.id]){
       delete VotesSent[socket.id];
     }
-    console.log('dissconnect')
+    
     if(Voters[socket.id]){
       let voterroom=Voters[socket.id];
+      delete Voters[socket.id];
       const index = ActiveRooms.findIndex(room => room.roomid === voterroom);
       if(index!=-1){
-        console.log(`room found on dc`)
+        console.log(`room from which disconnected`)
         console.log(ActiveRooms[index])
-          const index2 = ActiveRooms[index].users.findIndex(user => user === socket.id);
-          if(index2!=-1){
-          ActiveRooms[index].users.splice(index2,1)
-          console.log(`room after dc`)
-          console.log(ActiveRooms[index])
-          // delay the deletion by a few seconds, because if the user refreshes it still counts as disconnect
+
+        if(ActiveRooms[index].hostSocket == socket.id){
+          ActiveRooms[index].hostSocket='';
+          console.log('HOST DISCONNECTED');
           if(ActiveRooms[index])
           setTimeout(function() { if(ActiveRooms[index])deleteIfEmpty(ActiveRooms[index].roomid); }, 2000);
-          delete Voters[socket.id];
         }
+          console.log(`room after dc`)
+          console.log(ActiveRooms[index])
+
+          // delay the deletion by a few seconds, because if the user refreshes it still counts as disconnect
+
+        
       }
     }
 

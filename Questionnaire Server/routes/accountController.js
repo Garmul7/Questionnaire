@@ -11,6 +11,8 @@ const MongoClient = require("mongodb").MongoClient;
 const ObjectId = require("mongodb").ObjectID;
 
 const cors = require('cors')
+const crypto = require('crypto')
+
 router.use(cors())
 
 router.use(BodyParser.json());
@@ -18,18 +20,21 @@ router.use(BodyParser.urlencoded({ extended: true }));
 
 var database, collection;
 
+const Ajv = require("ajv");
+const ajv = new Ajv();
+
 const accountSchema = {
     type: "object",
     properties: {
         "_id": {type: "string"},
-        "login": {type: "string", minLength: 3},
-        "password": {type: "string", minLength: 5}
+        "login": {type: "string", minLength: 3, maxLength: 24},
+        "password": {type: "string", minLength: 5, maxLength: 24}
     },
     required: ["login", "password"]
 }
 
 function verifyAccount(body){
-    const accountValid = validate(accountSchema, body);
+    const accountValid = ajv.validate(accountSchema, body);
     if(accountValid){
         console.log('Account Valid')
         return true;
@@ -49,16 +54,6 @@ function verifyAccount(body){
 
 
 
-
-    // router.get("/", (request, response) => {
-    //     collection.find({}).toArray((error, result) => {
-    //         if(error) {
-    //             return response.status(500).send(error);
-    //         }
-    //         response.send(result);
-    //     });
-    // });
-
     router.post("/register", (request, response) => {       
         console.log('register')
         console.log(request.body)
@@ -74,16 +69,22 @@ function verifyAccount(body){
                     return
                     
                 }else{
+
+                    request.body._id = null; // make sure the _id is null so database creates a new unique one
+                    request.body.salt = crypto.randomBytes(16).toString('hex');
+                    request.body.hash = crypto.pbkdf2Sync(request.body.password, request.body.salt, 1000, 64, 'sha512').toString('hex');
+                    delete request.body.password
+
                     collection.insert(request.body, (error, result) => {
                         console.log(request.body);
                             if(error) {
                                 return response.status(500).send(error);
                             }
                             console.log(result);
-                            let payload = {subject: result._id};
+                            let payload = {subject: request.body._id};
                             let token = jwt.sign(payload, 'secretKey');
                             let login = request.body.login;
-                            let userid = result._id;
+                            let userid = request.body._id;
                             console.log('user registered')
                             response.status(200).send({token, login, userid});
                         });
@@ -106,7 +107,8 @@ function verifyAccount(body){
                 if(!result){
                     return response.status(401).send("Invalid login");
                 }else{
-                    if(passwordRequest != result.password){
+                    var hash = crypto.pbkdf2Sync(passwordRequest, result.salt, 1000, 64, 'sha512').toString('hex');
+                    if(hash != result.hash){
                         return response.status(401).send("Invalid password");
                     }else{
                         let payload = {subject: result._id};

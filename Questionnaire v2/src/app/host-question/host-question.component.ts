@@ -27,6 +27,8 @@ export class HostQuestionComponent implements OnInit {
   currentQuestion;
   votes: number[][];
 
+  numberofvotes: number;
+
   showvotes: boolean;
 
   ansLetter=["A", "B", "C", "D"];
@@ -41,8 +43,7 @@ export class HostQuestionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.screenWidth=window.innerWidth;
-    this.qrResize=this.screenWidth/10;
+    this.numberofvotes = 0;
     this.showvotes = false;
     //get the id read in params
     this.route.params.subscribe(params => {
@@ -71,6 +72,8 @@ export class HostQuestionComponent implements OnInit {
           this.currentQuestion=x[1];
           this.questionnaire.votes=x[2];
           this.votes = x[2];
+          this.numberofvotes = this.questionnaire.votes[this.currentQuestion].reduce((a, b) => a + b, 0);
+          console.log(this.numberofvotes);
         }
       }
     })
@@ -79,14 +82,17 @@ export class HostQuestionComponent implements OnInit {
       console.log(v);
       if(Array.isArray(v)) {
         this.questionnaire.votes[this.currentQuestion] = v
+        this.numberofvotes = this.questionnaire.votes[this.currentQuestion].reduce((a, b) => a + b, 0);;
+        console.log(this.numberofvotes);
       }
       this.updateVotes()
 
     });
 
 
-    this.socketService.errorsub.subscribe(v=> {alert(v + ', try hosting again')})
-
+    this.socketService.errorsub.subscribe(v=> {alert(v + ', try hosting again')});
+    this.screenWidth=window.innerWidth;
+    this.qrResize=this.screenWidth/8;
   }
 
   onResize(){
@@ -96,16 +102,22 @@ export class HostQuestionComponent implements OnInit {
 
   prevQ(){
     if(this.currentQuestion>0){
+      // console.log(this.currentQuestion)
+      // console.log(this.votes)
       this.currentQuestion-=1;
       this.socketService.changeQuestion(this.currentQuestion, this.generatedRoomId);
+      this.numberofvotes = this.questionnaire.votes[this.currentQuestion].reduce((a, b) => a + b, 0);
       this.updateVotes()
     }
   }
 
   nextQ(){
     if(this.currentQuestion<this.questionnaire.qQuestions.length-1){
+      // console.log(this.currentQuestion)
+      // console.log(this.votes)
       this.currentQuestion+=1;
       this.socketService.changeQuestion(this.currentQuestion, this.generatedRoomId);
+      this.numberofvotes = this.questionnaire.votes[this.currentQuestion].reduce((a, b) => a + b, 0);
       this.updateVotes()
     }
   }

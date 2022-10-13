@@ -31,11 +31,11 @@
   </div>
 
 
-  <div class="graphs" *ngIf="showvotes">
-    <div>Votes:</div>
-    <div *ngIf="questionnaire.votes[currentQuestion].length >= 2"  class="graphA" id="choiceA">A: {{questionnaire.votes[currentQuestion][0]}}</div>
-    <div *ngIf="questionnaire.votes[currentQuestion].length >= 2"  class="graphB" id="choiceB">B: {{questionnaire.votes[currentQuestion][1]}}</div>
-    <div *ngIf="questionnaire.votes[currentQuestion].length >= 3"  class="graphC" id="choiceC">C: {{questionnaire.votes[currentQuestion][2]}}</div>
-    <div *ngIf="questionnaire.votes[currentQuestion].length >= 4"  class="graphD" id="choiceD">D: {{questionnaire.votes[currentQuestion][3]}}</div>
+  <div class="graphs">
+    <div>Votes: {{numberofvotes}}</div>
+    <div *ngIf="questionnaire.votes[currentQuestion].length >= 2 && showvotes"  class="graphA" id="choiceA">A: {{questionnaire.votes[currentQuestion][0]}}</div>
+    <div *ngIf="questionnaire.votes[currentQuestion].length >= 2 && showvotes"  class="graphB" id="choiceB">B: {{questionnaire.votes[currentQuestion][1]}}</div>
+    <div *ngIf="questionnaire.votes[currentQuestion].length >= 3 && showvotes"  class="graphC" id="choiceC">C: {{questionnaire.votes[currentQuestion][2]}}</div>
+    <div *ngIf="questionnaire.votes[currentQuestion].length >= 4 && showvotes"  class="graphD" id="choiceD">D: {{questionnaire.votes[currentQuestion][3]}}</div>
   </div>
 </div>

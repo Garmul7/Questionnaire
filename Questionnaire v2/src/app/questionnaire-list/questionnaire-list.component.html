@@ -4,7 +4,7 @@
   <div class="gridview">
     <div *ngFor="let questionnaire of questionnaireList" >
       <button *ngIf="operation=='edit'" (click)="deleteQuestionnaire(questionnaire)"  class="delButton">Delete</button>
-      <div  class="qbox" (click)="redirect(questionnaire)">
+      <div class="qbox" (click)="redirect(questionnaire)">
         <!--<p> id: {{questionnaire._id}}</p> -->
         <p class="qtopic">{{questionnaire.qTopic}}</p>
         <p class="nrofq">Nr. of questions: {{questionnaire.votes.length}}</p>
